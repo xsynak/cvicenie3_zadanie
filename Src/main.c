@@ -22,6 +22,22 @@
 #include "main.h"
 #include "assignment.h"
 
+
+uint8_t stav_tl;
+
+EDGE_TYPE edgeDetect(uint8_t state, uint8_t samples){
+	for(int x=1;x<=samples;x++){
+		LL_mDelay(5);
+		if(state!=BUTTON_GET_STATE){
+			return NONE;
+		}
+		if(x==samples){
+			if(state == 1) return RISE;
+			else return FALL;
+		}
+	}
+}
+
 int main(void)
 {
   /*
@@ -54,15 +70,16 @@ int main(void)
   /* GPIOA pin 3 and 4 setup */
 
 	//type your code for GPIOA pins setup here:
+  //MODER_REG
 
-  *((volatile uint32_t *)GPIOA_BASE_ADDR) &= ~(uint32_t)(0x3 << 8);
+  GPIOA_MODER_REG &= ~(uint32_t)(0x3 << 8);
 
-  *((volatile uint32_t *)GPIOA_BASE_ADDR) |= (uint32_t)(1 << 8); //output mode
+  GPIOA_MODER_REG |= (uint32_t)(1 << 8); //output mode
 
-  *((volatile uint32_t *)GPIOA_BASE_ADDR) &= ~(uint32_t)(0x3 << 6);
+  GPIOA_MODER_REG &= ~(uint32_t)(0x3 << 6);
 
   /*GPIO OTYPER register*/
-   //*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x04U))) &= ~(1 << 4);
+
    GPIOA_OTYPER_REG &= ~(1 << 4);
    /*GPIO OSPEEDR register*/
    //Set Low speed for GPIOA pin 3
@@ -74,35 +91,23 @@ int main(void)
    GPIOA_PUPDR_REG |= (1 << 6);
 
 
-
-
+  stav_tl=BUTTON_GET_STATE;
 
   while (1)
   {
-	  if(BUTTON_GET_STATE)
-	  {
-		  // 0.25s delay
-		  LL_mDelay(250);
-		  LED_ON;
+	  if(stav_tl != BUTTON_GET_STATE){
+	 	 stav_tl=BUTTON_GET_STATE;
 
-		  // 0.25s delay
-		  LL_mDelay(250);
-		  LED_OFF;
-
-	  }
-	  else
-	  {
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_ON;
-
-		  // 1s delay
-		  LL_mDelay(1000);
-		  LED_OFF;
-
-	  }
+	 	 if(edgeDetect(BUTTON_GET_STATE,5) == RISE){  //moznost zmeny na FALL pre detekciu dobeznej hrany
+	 		 if(LED_GET_STATE) {
+	 			 LED_OFF;
+		  }
+	 		 else {
+	 			 LED_ON;
+	 		}
+	 	}
+	}
   }
-
 }
 
 /* USER CODE BEGIN 4 */

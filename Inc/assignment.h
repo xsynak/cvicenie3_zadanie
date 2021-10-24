@@ -1,12 +1,14 @@
 /*
  * assignment.h
  *
- *  Created on: 27. 9. 2020
- *      Author: Stancoj
  */
 
 #ifndef ASSIGNMENT_H_
 #define ASSIGNMENT_H_
+typedef enum EDGE_TYPE{NONE = 0, RISE = 1, FALL = 2} EDGE_TYPE;
+
+EDGE_TYPE edgeDetect(uint8_t, uint8_t);
+
 
 /**
  * 		This header file provides macros to the MCU's registers required for this assignment.
@@ -45,6 +47,7 @@
 #define LED_OFF					*((volatile uint32_t *)((uint32_t)(0x48000000 + 0x28U))) |= (1 << 4)
 
 #define BUTTON_GET_STATE		!(*((volatile uint32_t *)(uint32_t)(GPIOA_BASE_ADDR + 0x10U)) & (1 << 3))
-
+#define LED_GET_STATE			*((volatile uint32_t *)GPIOA_ODR_REG) & (1 << 4)
+//(*((volatile uint32_t *)(uint32_t)(GPIOA_BASE_ADDR + 0x14U)) & (1 << 4))
 
 #endif /* ASSIGNMENT_H_ */
