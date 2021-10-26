@@ -27,7 +27,7 @@ uint8_t stav_tl;
 
 EDGE_TYPE edgeDetect(uint8_t state, uint8_t samples){
 	for(int x=1;x<=samples;x++){
-		LL_mDelay(5);
+		LL_mDelay(1);
 		if(state!=BUTTON_GET_STATE){
 			return NONE;
 		}
@@ -36,6 +36,7 @@ EDGE_TYPE edgeDetect(uint8_t state, uint8_t samples){
 			else return FALL;
 		}
 	}
+	return 0;
 }
 
 int main(void)
@@ -82,12 +83,11 @@ int main(void)
 
    GPIOA_OTYPER_REG &= ~(1 << 4);
    /*GPIO OSPEEDR register*/
-   //Set Low speed for GPIOA pin 3
+   //Set Low speed for GPIOA pin 4
    GPIOA_OSPEEDER_REG &= ~(0x3 << 8);
 
    /*GPIO PUPDR register, reset*/
    GPIOA_PUPDR_REG &= ~(0x3 << 6);
-
    GPIOA_PUPDR_REG |= (1 << 6);
 
 
@@ -98,7 +98,7 @@ int main(void)
 	  if(stav_tl != BUTTON_GET_STATE){
 	 	 stav_tl=BUTTON_GET_STATE;
 
-	 	 if(edgeDetect(BUTTON_GET_STATE,5) == RISE){  //moznost zmeny na FALL pre detekciu dobeznej hrany
+	 	 if(edgeDetect(BUTTON_GET_STATE,5) == RISE){  //moznost zmeny RISE na FALL pre detekciu dobeznej hrany
 	 		 if(LED_GET_STATE) {
 	 			 LED_OFF;
 		  }
